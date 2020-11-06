@@ -1,0 +1,2 @@
+/bin/ar qc libapplibrary.a  CMakeFiles/applibrary.dir/ADT.cpp.o
+/bin/ranlib libapplibrary.a

@@ -1,0 +1,17 @@
+[
+{
+  "directory": "/home/mstewart/EECE_2080/EECE_2080_Lab_08/build",
+  "command": "/bin/x86_64-linux-gnu-g++-9    -g   -o CMakeFiles/runMain.dir/Main.cpp.o -c /home/mstewart/EECE_2080/EECE_2080_Lab_08/Main.cpp",
+  "file": "/home/mstewart/EECE_2080/EECE_2080_Lab_08/Main.cpp"
+},
+{
+  "directory": "/home/mstewart/EECE_2080/EECE_2080_Lab_08/build",
+  "command": "/bin/x86_64-linux-gnu-g++-9    -g   -o CMakeFiles/runTests.dir/tests.cpp.o -c /home/mstewart/EECE_2080/EECE_2080_Lab_08/tests.cpp",
+  "file": "/home/mstewart/EECE_2080/EECE_2080_Lab_08/tests.cpp"
+},
+{
+  "directory": "/home/mstewart/EECE_2080/EECE_2080_Lab_08/build",
+  "command": "/bin/x86_64-linux-gnu-g++-9    -g   -o CMakeFiles/applibrary.dir/ADT.cpp.o -c /home/mstewart/EECE_2080/EECE_2080_Lab_08/ADT.cpp",
+  "file": "/home/mstewart/EECE_2080/EECE_2080_Lab_08/ADT.cpp"
+}
+]
