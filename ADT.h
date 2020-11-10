@@ -1,5 +1,8 @@
 #pragma once
+#include <vector>
 #include <memory>
+#include <stdlib.h>
+#include <cmath>
 
 using namespace std;
 
@@ -29,7 +32,7 @@ public:
     // This will remove an item from the queue from the appropriate location.
     virtual bool Remove(int payload) = 0;
     // Display Top Value
-    virtual shared_ptr<Node<int>> Peek() const = 0;
+    // virtual shared_ptr<Node<int>> Peek() const = 0;
 
 };
 
@@ -38,7 +41,6 @@ class QueuePriorityQueue : public IPriorityQueue
 {
 private:
     shared_ptr<Node<int>> m_front_ptr;
-    
     void SetFrontPtr(shared_ptr<Node<int>> front_ptr ) { m_front_ptr = front_ptr; }
 
 
@@ -52,7 +54,7 @@ public:
     bool IsEmpty() const override;
     bool Insert(int payload) override;
     bool Remove(int payload) override;
-    shared_ptr<Node<int>> Peek() const override;
+    shared_ptr<Node<int>> Peek() const;
     string PrintQueue() const;
     int GetSize() const;
 
@@ -63,19 +65,32 @@ public:
 class HeapPriorityQueue : public IPriorityQueue
 {
 private:
+    HeapPriorityQueue() {};
+
     int GetNumberOfNode() const;
     int GetHeight() const;
-    shared_ptr<Node<int>> PeekTop() const;
     void Clear();
+    void Organize(int root);
+
+    int m_num_nodes;
+    int m_cur_node;
+    std::vector<int> m_nodes;
 
 public:
 
-    HeapPriorityQueue();
-    ~HeapPriorityQueue();
+    HeapPriorityQueue(int num_nodes) : m_num_nodes(num_nodes), m_cur_node(0)
+    {
+        for (int i=0; i < num_nodes; i++)
+        {
+            m_nodes.push_back(0);
+        }
+    }
+
+    ~HeapPriorityQueue() {};
 
     bool IsEmpty() const override;
     bool Insert(int payload) override;
     bool Remove(int payload) override;
-    shared_ptr<Node<int>> Peek() const override;
+    int Peek() const;
     string PrintQueue() const;
 };
