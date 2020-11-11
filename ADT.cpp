@@ -9,8 +9,11 @@
 ArrayBasedQueue::ArrayBasedQueue(const size_t size) : 
     backIndex(0), frontIndex(0), array_size(size)
 {   
-    shared_ptr<int[]> sp(new int[size]);
-    queue = sp;
+    queue = shared_ptr<int[]> (new int[size]);
+    for (int i=0; i<size; i++)
+    {
+        queue[i] = 0;
+    }
 }
 
 ArrayBasedQueue::~ArrayBasedQueue() {}
@@ -56,16 +59,15 @@ bool ArrayBasedQueue::deQueue() {
 int ArrayBasedQueue::Peek() {
 	if (isEmpty())
 	{
-		throw "ADT is emtpy";
+		throw "ADT is empty";
 	}
 	else
 	{
-		//TODO
 		return queue[frontIndex];
 	}
 }
 
-int ArrayBasedQueue::GetSize() { return array_size; } 
+int ArrayBasedQueue::GetArraySize() { return array_size; } 
 
 /* QueuePriorityQueue */
 
@@ -73,32 +75,32 @@ bool QueuePriorityQueue::IsEmpty() const { return (GetSize() == 0); }
 
 bool QueuePriorityQueue::Insert(int payload)
 {
+    // Check if full
     if (queue->isFull())
         return false;
 
+    // Add new payload
     queue->enQueue(payload);
+    queue_size++;
     
-    ArrayBasedQueue cpy = *queue;
+    // Make a copy and get the size
+    size_t buf_size = queue->GetArraySize();
 
-    size_t size = GetSize();
-    size_t buf_size = queue->GetSize();
-    std::shared_ptr<int[]> tmp_array(new int[buf_size]);
-    for (int i=0; i<size; i++)
+    // populate data into tmp_array
+    int tmp_array[buf_size] = {0};
+
+    for (int i=0; i<queue_size; i++)
     {
-        tmp_array[i] = cpy.Peek();
-        cpy.deQueue();
+        tmp_array[i] = queue->Peek();
+        queue->deQueue();
     }
-
+    
     bubbleSort(tmp_array, buf_size);
 
-    for (int i=0; i<size; i++)
-        queue->deQueue();
-    
-    for (int i=0; i<size; i++)
+    for (int i=buf_size-1; i>=buf_size-queue_size; i--)
         queue->enQueue(tmp_array[i]);
-    
-    return true;
 
+    return true;
 }
 
 bool QueuePriorityQueue::Remove(int payload)
@@ -107,27 +109,34 @@ bool QueuePriorityQueue::Remove(int payload)
     if (queue->isEmpty())
         return false;
 
-    ArrayBasedQueue cpy = *queue;
+    size_t buf_size = queue->GetArraySize();
+    int tmp_array[buf_size] = {0};
+    bool found_payload = false;
 
-    size_t size = GetSize();
-    size_t buf_size = queue->GetSize();
-    std::shared_ptr<int[]> tmp_array(new int[buf_size]);
-    for (int i=0; i<size; i++)
+
+    for (int i=0; i<queue_size; i++)
     {
-        if(cpy.Peek() == payload)
-            cpy.deQueue();
+        if(queue->Peek() == payload)
+            found_payload = true;
         else
-            tmp_array[i] = cpy.Peek();
+            tmp_array[i] = queue->Peek();
         
+        queue->deQueue();
     }
+
+    if (found_payload)
+        queue_size--;
+
+    if(queue_size == 0)
+        return true;
 
     // Organize and rebuild queue
     bubbleSort(tmp_array, buf_size);
 
-    for (int i=0; i<size; i++)
+    for (int i=0; i<queue_size; i++)
         queue->deQueue();
-    
-    for (int i=size; i>=0; i--)
+
+    for (int i=buf_size-1; i>=buf_size-queue_size; i--)
         queue->enQueue(tmp_array[i]);
     
     return true;
@@ -139,34 +148,37 @@ int QueuePriorityQueue::Peek() const { return queue->Peek(); }
 string QueuePriorityQueue::PrintQueue() const
 {
     string str = "";
-    ArrayBasedQueue cpy = *queue; 
+    
+    // Get the size
+    size_t buf_size = queue->GetArraySize();
 
-    // Loop till node is equal to cur
-    while (!cpy.isEmpty())
+    // populate data into tmp_array
+    int tmp_array[buf_size] = {0};
+
+    for (int i=0; i<queue_size; i++)
     {
-        str += to_string(cpy.Peek());
-        str += " ";
-        cpy.deQueue();
+        tmp_array[i] = queue->Peek();
+        queue->deQueue();
     }
 
+    // Populate String
+    for (int i=0; i<queue_size; i++)
+    {
+        str += to_string(tmp_array[i]);
+        str += " ";
+    }
+
+    // Repopulate the queue
+    for (int i=0; i<queue_size; i++)
+        queue->enQueue(tmp_array[i]);
+    
     // Print out and return 
     cout << str << endl;
     return str;
     
 }
 
-int QueuePriorityQueue::GetSize() const 
-{
-    ArrayBasedQueue cpy = *queue;
-    int count = 0;
-    
-    while (!cpy.isEmpty())
-    {
-        cpy.deQueue();   
-        count++;
-    }
-    return count;
-}
+int QueuePriorityQueue::GetSize() const { return queue_size; }
 
 /* HeapPriorityQueue */
 int HeapPriorityQueue::GetNumberOfNode() const 

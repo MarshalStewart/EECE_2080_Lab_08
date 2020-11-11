@@ -7,7 +7,7 @@
 using namespace std;
 
 // From lab 6
-void bubbleSort(std::shared_ptr<int[]> array, int size)
+void bubbleSort(int *array, int size)
 {
     bool isSorted = false; // we are done
     int bubbles = 1; // num operations
@@ -42,7 +42,7 @@ public:
 	bool isFull() const;
 	bool enQueue(int val);
 	bool deQueue();
-    int GetSize();
+    int GetArraySize();
 	//If the ADT is empty throw an exception indicating this
 	int Peek();
 private:
@@ -61,7 +61,7 @@ public:
     // This will remove an item from the queue from the appropriate location.
     virtual bool Remove(int payload) = 0;
     // Display Top Value
-    // virtual shared_ptr<Node<int>> Peek() const = 0;
+    virtual int Peek() const = 0;
 
 };
 
@@ -70,21 +70,22 @@ class QueuePriorityQueue : public IPriorityQueue
 {
 private:
     std::shared_ptr<ArrayBasedQueue> queue;
-
+    int queue_size;
 public:
 
-    QueuePriorityQueue(size_t size) { queue = std::make_shared<ArrayBasedQueue>(size); }
+    QueuePriorityQueue(size_t size) : queue_size(0) { queue = std::make_shared<ArrayBasedQueue>(size); }
     ~QueuePriorityQueue() {}
 
     bool IsEmpty() const override;
     bool Insert(int payload) override;
     bool Remove(int payload) override;
-    int Peek() const;
+    int Peek() const override;
     string PrintQueue() const;
     int GetSize() const;
 
 };
 
+// Didn't make heap obj, made class the implementation of a heap
 class HeapPriorityQueue : public IPriorityQueue
 {
 private:
@@ -114,6 +115,6 @@ public:
     bool IsEmpty() const override;
     bool Insert(int payload) override;
     bool Remove(int payload) override;
-    int Peek() const;
+    int Peek() const override;
     string PrintQueue() const;
 };
