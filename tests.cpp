@@ -16,7 +16,7 @@ std::string timer = "";
 TEST(Queue, Empty)
 {
     // create new queue
-    auto pq = QueuePriorityQueue();
+    auto pq = QueuePriorityQueue(0);
 
     string str = pq.PrintQueue();
     ASSERT_EQ(str, "");
@@ -25,7 +25,7 @@ TEST(Queue, Empty)
 TEST(Queue, Add)
 {
     // create new queue
-    auto pq = QueuePriorityQueue();
+    auto pq = QueuePriorityQueue(2);
     
     pq.Insert(5);
     string str = pq.PrintQueue();
@@ -38,7 +38,7 @@ TEST(Queue, Add)
 TEST(Queue, Remove)
 {
     // create new queue
-    auto pq = QueuePriorityQueue();
+    auto pq = QueuePriorityQueue(3);
     
     pq.Insert(20);
     pq.Insert(15);
@@ -96,7 +96,7 @@ TEST(Queue, FiveHundred)
     auto start = high_resolution_clock::now();
     auto stop = high_resolution_clock::now();
 
-    auto pq = QueuePriorityQueue();
+    auto pq = QueuePriorityQueue(500);
     for (int i=0; i<500; i++)
     {
         pq.Insert(randomData[i]);
@@ -124,7 +124,7 @@ TEST(Queue, Thousand)
     auto start = high_resolution_clock::now();
     auto stop = high_resolution_clock::now();
     
-    auto pq = QueuePriorityQueue();
+    auto pq = QueuePriorityQueue(1000);
     for (int i=0; i<1000; i++)
     {
         pq.Insert(randomData[i]);
@@ -151,7 +151,7 @@ TEST(Queue, TwoThousand)
     auto start = high_resolution_clock::now();
     auto stop = high_resolution_clock::now();
     
-    auto pq = QueuePriorityQueue();
+    auto pq = QueuePriorityQueue(2000);
     for (int i=0; i<2000; i++)
     {
         pq.Insert(randomData[i]);
@@ -178,7 +178,7 @@ TEST(Queue, FiveThousand)
     auto start = high_resolution_clock::now();
     auto stop = high_resolution_clock::now();
     
-    auto pq = QueuePriorityQueue();
+    auto pq = QueuePriorityQueue(5000);
     for (int i=0; i<5000; i++)
     {
         pq.Insert(randomData[i]);

@@ -6,21 +6,50 @@
 
 using namespace std;
 
-template<typename PayloadType>
-class Node
+// From lab 6
+void bubbleSort(std::shared_ptr<int[]> array, int size)
 {
-	Node();
-	std::shared_ptr<Node> m_nxt;
-	PayloadType m_payload;
-public:
-	Node(std::shared_ptr<Node> nxt, PayloadType payload) : m_nxt(nxt), m_payload(payload) {};
-	~Node() {}
-	std::shared_ptr<Node> GetNxt() { return m_nxt; }
-	PayloadType GetPayload() { return m_payload; }
-	void SetNxt(std::shared_ptr<Node> nxt) { m_nxt = nxt;  }
-	void SetPayload(PayloadType payload) { m_payload = payload;  }
-};
+    bool isSorted = false; // we are done
+    int bubbles = 1; // num operations
 
+    while (!isSorted && (bubbles < size))
+    {
+        isSorted = true;
+        for (int i = 0; i < size - bubbles; i++)
+        {
+            int nxt = i + 1;
+            int count = 0;
+            if (array[i] > array[nxt])
+            {
+                int temp_1 = array[i], temp_2 = array[nxt];
+                array[i] = temp_2;
+                array[nxt] = temp_1;
+                isSorted = false;
+            }
+        }
+
+        bubbles++;
+
+    }
+}
+
+class  ArrayBasedQueue {
+public:
+    ArrayBasedQueue() {}
+	ArrayBasedQueue(size_t size);
+	virtual ~ArrayBasedQueue();
+	bool isEmpty() const;
+	bool isFull() const;
+	bool enQueue(int val);
+	bool deQueue();
+    int GetSize();
+	//If the ADT is empty throw an exception indicating this
+	int Peek();
+private:
+    int array_size;
+	std::shared_ptr<int[]> queue;
+	int frontIndex, backIndex;
+};
 
 class IPriorityQueue
 {
@@ -40,25 +69,19 @@ public:
 class QueuePriorityQueue : public IPriorityQueue
 {
 private:
-    shared_ptr<Node<int>> m_front_ptr;
-    void SetFrontPtr(shared_ptr<Node<int>> front_ptr ) { m_front_ptr = front_ptr; }
-
+    std::shared_ptr<ArrayBasedQueue> queue;
 
 public:
 
-    QueuePriorityQueue() : m_front_ptr(nullptr) {}
-    QueuePriorityQueue(shared_ptr<Node<int>> front_ptr) : m_front_ptr(front_ptr) {} 
-
+    QueuePriorityQueue(size_t size) { queue = std::make_shared<ArrayBasedQueue>(size); }
     ~QueuePriorityQueue() {}
 
     bool IsEmpty() const override;
     bool Insert(int payload) override;
     bool Remove(int payload) override;
-    shared_ptr<Node<int>> Peek() const;
+    int Peek() const;
     string PrintQueue() const;
     int GetSize() const;
-
-    shared_ptr<Node<int>> GetFrontPtr() const { return m_front_ptr; };
 
 };
 

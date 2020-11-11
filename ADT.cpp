@@ -4,99 +4,149 @@
 
 #include "ADT.h"
 
+/* Array Based Queue */
+
+ArrayBasedQueue::ArrayBasedQueue(const size_t size) : 
+    backIndex(0), frontIndex(0), array_size(size)
+{   
+    shared_ptr<int[]> sp(new int[size]);
+    queue = sp;
+}
+
+ArrayBasedQueue::~ArrayBasedQueue() {}
+
+bool ArrayBasedQueue::isEmpty() const
+{
+	return frontIndex == backIndex;
+}
+
+bool ArrayBasedQueue::isFull() const {
+	if (backIndex - frontIndex == array_size)
+		return true;
+	else if (frontIndex - backIndex == array_size)
+		return true;
+
+	return false;
+}
+
+bool ArrayBasedQueue::enQueue(int val) {
+	if(!isFull()) {
+		queue[backIndex] = val;
+		backIndex = (++backIndex) % array_size;
+		return true;
+	}
+	else{
+		return false;
+	}
+
+}
+
+bool ArrayBasedQueue::deQueue() {
+	if(!isEmpty()) {
+		queue[frontIndex] = 0;
+		frontIndex = (++frontIndex) % array_size;
+		return true;
+	}
+	else{
+		return false;
+	}
+
+}
+
+int ArrayBasedQueue::Peek() {
+	if (isEmpty())
+	{
+		throw "ADT is emtpy";
+	}
+	else
+	{
+		//TODO
+		return queue[frontIndex];
+	}
+}
+
+int ArrayBasedQueue::GetSize() { return array_size; } 
+
 /* QueuePriorityQueue */
 
 bool QueuePriorityQueue::IsEmpty() const { return (GetSize() == 0); }
 
 bool QueuePriorityQueue::Insert(int payload)
 {
-    auto node = make_shared<Node<int>>(nullptr, payload);
-    auto cur_ptr = m_front_ptr;
-    shared_ptr<Node<int>> prv_ptr = nullptr;
+    if (queue->isFull())
+        return false;
 
-    // If the Queue is empty
-    if (cur_ptr == nullptr)
+    queue->enQueue(payload);
+    
+    ArrayBasedQueue cpy = *queue;
+
+    size_t size = GetSize();
+    size_t buf_size = queue->GetSize();
+    std::shared_ptr<int[]> tmp_array(new int[buf_size]);
+    for (int i=0; i<size; i++)
     {
-        m_front_ptr = node;
-        return true;
+        tmp_array[i] = cpy.Peek();
+        cpy.deQueue();
     }
 
-    // Loop till it's larger than or equal to cur
-    while(payload < cur_ptr->GetPayload())
-    {
-        prv_ptr = cur_ptr;
-        cur_ptr = cur_ptr->GetNxt();
+    bubbleSort(tmp_array, buf_size);
 
-        if (cur_ptr == nullptr) break;
-    }
-
-    // Check if there is a prv ptr, else set new node to front
-    if (prv_ptr != nullptr)
-        prv_ptr->SetNxt(node);
-    else
-        m_front_ptr = node; 
-
-    node->SetNxt(cur_ptr);
-
+    for (int i=0; i<size; i++)
+        queue->deQueue();
+    
+    for (int i=0; i<size; i++)
+        queue->enQueue(tmp_array[i]);
+    
     return true;
 
 }
 
 bool QueuePriorityQueue::Remove(int payload)
 {
-    auto cur_ptr = m_front_ptr;
-    shared_ptr<Node<int>> prv_ptr = nullptr;
-
     // If the Queue is empty
-    if (IsEmpty())
-    {
-        // m_front_ptr = node;
+    if (queue->isEmpty())
         return false;
-    }
 
-    // Loop till node is equal to cur
-    while(payload < cur_ptr->GetPayload())
+    ArrayBasedQueue cpy = *queue;
+
+    size_t size = GetSize();
+    size_t buf_size = queue->GetSize();
+    std::shared_ptr<int[]> tmp_array(new int[buf_size]);
+    for (int i=0; i<size; i++)
     {
-        prv_ptr = cur_ptr;
-        cur_ptr = cur_ptr->GetNxt();
+        if(cpy.Peek() == payload)
+            cpy.deQueue();
+        else
+            tmp_array[i] = cpy.Peek();
+        
     }
 
-    // If we are larger than cur_ptr, couldn't find the node
-    if (payload > cur_ptr->GetPayload())
-    {
-        return false;
-    }
+    // Organize and rebuild queue
+    bubbleSort(tmp_array, buf_size);
 
-    // Remove the cur_ptr
-    auto nxt_ptr = cur_ptr->GetNxt();
-    if (prv_ptr != nullptr)
-        prv_ptr->SetNxt(nxt_ptr);
-    else
-        m_front_ptr = nxt_ptr;
-
+    for (int i=0; i<size; i++)
+        queue->deQueue();
+    
+    for (int i=size; i>=0; i--)
+        queue->enQueue(tmp_array[i]);
+    
     return true;
+
 }
 
-shared_ptr<Node<int>> QueuePriorityQueue::Peek() const { return GetFrontPtr(); }
+int QueuePriorityQueue::Peek() const { return queue->Peek(); }
 
-string QueuePriorityQueue::PrintQueue() const 
+string QueuePriorityQueue::PrintQueue() const
 {
-    auto cur_ptr = m_front_ptr;
-    auto prv_ptr = cur_ptr;
     string str = "";
-
-    // If the Queue is empty
-    if (cur_ptr == nullptr)
-    {
-        return "";
-    }
+    ArrayBasedQueue cpy = *queue; 
 
     // Loop till node is equal to cur
-    while(cur_ptr != nullptr)
+    while (!cpy.isEmpty())
     {
-        str += to_string(cur_ptr->GetPayload());
+        str += to_string(cpy.Peek());
         str += " ";
-        cur_ptr = cur_ptr->GetNxt();
+        cpy.deQueue();
     }
 
     // Print out and return 
@@ -107,11 +157,12 @@ string QueuePriorityQueue::PrintQueue() const
 
 int QueuePriorityQueue::GetSize() const 
 {
-    shared_ptr<Node<int>> cur_ptr = m_front_ptr;
+    ArrayBasedQueue cpy = *queue;
     int count = 0;
-    while(cur_ptr != nullptr)
+    
+    while (!cpy.isEmpty())
     {
-        cur_ptr = cur_ptr->GetNxt();
+        cpy.deQueue();   
         count++;
     }
     return count;
